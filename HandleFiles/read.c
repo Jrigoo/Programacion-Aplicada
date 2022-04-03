@@ -6,17 +6,17 @@ void printArray(int values[],int n); //Declaro una función para imprimir un arr
 void printMatrix(int values[100][100],int n); //Declaro una función para imprimir una matriz. n es el tamaño de values
 
 int main(){
-	FILE * fp = fopen("Datax.txt", "r"); //Apuntador de archivo para leer el .txt
+	FILE * fp = fopen("Data.txt", "r"); //Apuntador de archivo para leer el .txt
 	char buff[999]; //String en donde se leera cada linea de el archivo
     int raw[999]; //Array en donde se guardará la data extraida
     int c=0; //Numero entero c
 
-    int sizeMatrix = 5; //Largo de la matriz principal
+    int sizeMatrix = 10; //Largo de la matriz principal
     int sizeFilter = 3; //Largo del filtro
     int sizeResult = sizeMatrix - sizeFilter + 1; //Largo de la matriz resultante
     
     int matrix[100][100]; //Matriz
-	int filter[3][3] = {1,0,1,0,1,0,1,0,1}; //Kernel
+	int filter[3][3] = {1,0,0,0,1,0,0,0,1}; //Kernel
 	int resultado[100][100]; //Matriz resultante
 
     
@@ -31,7 +31,7 @@ int main(){
         - Por ultimo con atoi() hacemos que el substring se vuelva un int y lo agregamos
         a nuestro array raw
     */
-    while (fgets(buff,1024,fp)){
+    while (fgets(buff,300,fp)){
         char *field = strtok(buff,",");
         while (field){
             raw[c] = atoi(field);
