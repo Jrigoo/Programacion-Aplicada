@@ -6,19 +6,21 @@ void printArray(int values[],int n); //Declaro una función para imprimir un arr
 void printMatrix(int values[100][100],int n); //Declaro una función para imprimir una matriz. n es el tamaño de values
 
 int main(){
-	FILE * fp = fopen("Data.txt", "r"); //Apuntador de archivo para leer el .txt
+	FILE * fp = fopen("Datax.txt", "r"); //Apuntador de archivo para leer el .txt
 	char buff[999]; //String en donde se leera cada linea de el archivo
     int raw[999]; //Array en donde se guardará la data extraida
     int c=0; //Numero entero c
 
-    int sizeMatrix = 10; //Largo de la matriz principal
+    int sizeMatrix = 5; //Largo de la matriz principal
     int sizeFilter = 3; //Largo del filtro
     int sizeResult = sizeMatrix - sizeFilter + 1; //Largo de la matriz resultante
     
     int matrix[100][100]; //Matriz
-	int filter[3][3] = {1,0,0,0,1,0,0,0,1}; //Kernel
+	int filter[3][3] = {1,0,1,0,1,0,1,0,1}; //Kernel
 	int resultado[100][100]; //Matriz resultante
 
+    /* Variables Convolución */
+    int x = 0;int y = 0;int i = 0;int j = 0;int r = 0;
     
 	if (fp == NULL){
 		printf( "Data.txt file failed to open." ) ;
@@ -60,6 +62,16 @@ int main(){
     /* Imprimir matriz */
     printf("MATRIX DATA -------------------------------\n");
     printMatrix(matrix,sizeMatrix);
+
+    printf("FILTER DATA -------------------------------\n");
+    for (int i = 0; i < sizeFilter; i++){
+        for (int j = 0; j < sizeFilter; j++){
+            printf("%d",filter[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+    
     
     /* Convolucion 
         - 4 for loops:
@@ -70,18 +82,23 @@ int main(){
             - j se encarga de multiplicar las columnas del filtro por 
             las de la principal
     */
-    for (int x = 0; x < sizeResult; x++){ //Mueva entre filas
-        for (int y = 0; y < sizeResult;y++){ //Mueva entre columnas
-            int r = 0;
-            for(int i = 0; i < sizeFilter;i++){
-                for(int j = 0; j < sizeFilter;j++){
-                    r = r + matrix[i+x][j+y]*filter[i][j];
-                }
-            }
+    while (x < sizeResult){
+        if (y == sizeResult){
+            x++;
+            i=0;j=0;r=0;y=0;
+        }else if (i == sizeFilter){
             resultado[x][y] = r;
+            y++;
+            i=0;j=0;r=0;
+        }else if (j == sizeFilter){
+            i++;
+            j=0;
+        }else{
+            r = r + matrix[i+x][j+y]*filter[i][j];
+            j++;
         }
     }
-
+    
     /* Resultado de convolucion */
     printf("CONVOLUTION RESULT ------------------------\n");
     printMatrix(resultado,sizeResult);
