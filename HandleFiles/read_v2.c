@@ -19,6 +19,8 @@ int main(){
 	int filter[3][3] = {1,0,1,0,1,0,1,0,1}; //Kernel
 	int resultado[100][100]; //Matriz resultante
 
+    /* Variables Convolución */
+    int x = 0;int y = 0;int i = 0;int j = 0;int r = 0;
     
 	if (fp == NULL){
 		printf( "Data.txt file failed to open." ) ;
@@ -69,10 +71,10 @@ int main(){
         printf("\n");
     }
     printf("\n");
-
-
+    
+    
     /* Convolucion 
-        - 4 for loops:
+        - 1 while loop:
             - x se encarga de mover el filtro por fila
             - y se encarga de mover el filtro por columnas
             - i se encarga de multiplicar las filas del filtro por las
@@ -80,18 +82,23 @@ int main(){
             - j se encarga de multiplicar las columnas del filtro por 
             las de la principal
     */
-    for (int x = 0; x < sizeResult; x++){ //Mueva entre filas
-        for (int y = 0; y < sizeResult;y++){ //Mueva entre columnas
-            int r = 0;
-            for(int i = 0; i < sizeFilter;i++){
-                for(int j = 0; j < sizeFilter;j++){
-                    r = r + matrix[i+x][j+y]*filter[i][j];
-                }
-            }
+    while (x < sizeResult){
+        if (y == sizeResult){
+            x++;
+            i=0;j=0;r=0;y=0;
+        }else if (i == sizeFilter){
             resultado[x][y] = r;
+            y++;
+            i=0;j=0;r=0;
+        }else if (j == sizeFilter){
+            i++;
+            j=0;
+        }else{
+            r = r + matrix[i+x][j+y]*filter[i][j];
+            j++;
         }
     }
-
+    
     /* Resultado de convolucion */
     printf("CONVOLUTION RESULT ------------------------\n");
     printMatrix(resultado,sizeResult);
@@ -119,3 +126,4 @@ void printMatrix(int values[100][100],int n){
     }
     printf("-------------------------------------------\n");
 }
+
