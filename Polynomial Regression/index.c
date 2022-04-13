@@ -23,12 +23,13 @@ void main(){
     double y[100];
     double Y[100][100];
     double beta[100];
-    int grado = 6;
+    int grado = 4; //Para DATA 2 Grado 4, Para DATA 1 Grado 1
 
     double **bp;
     double *yrp;
-    int n = countLines(DATA1);
-    gpsData = readFile(DATA1,n);
+    int n = countLines(DATA2);
+    gpsData = readFile(DATA2,n);
+    
     /* Leemos data y la guardamos en una matrix */
     for (int i = 0; i < n; i++){
         for (int j = 0; j < 2; j++){
@@ -51,7 +52,11 @@ void main(){
 
     yrp = getResult(n,x,beta,grado+1);
     free(yrp);
-    printf("\n Matriz Puntos resultantes yr \n");
+
+    printf("\n Variable independiente x \n");
+    printArray(x,n);
+
+    printf("\n Puntos resultantes yr \n");
     printArray(yrp,n);
     RMSE(n,y,yrp);
 }
