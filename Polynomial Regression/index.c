@@ -43,11 +43,14 @@ void main(){
     }
     
     bp = polynomialRegression(x,Y,grado,n);
-    printf("Coeficientes Beta PT1 ------------->\n");
+    printf("Ecuacion resultante y junto a coeficientes beta ------------->\n");
     for (int i = 0; i < grado+1; i++){
         beta[i] = bp[i][0];
-        printf("Para x^%d: %f",i,bp[i][0]);
-        printf("\n");
+        if (beta[i] > 0){
+            printf("+%f*x^%d\t",beta[i],i);
+        }else{
+            printf("%f*x^%d\t",beta[i],i);
+        }
     }   
 
     yrp = getResult(n,x,beta,grado+1);
