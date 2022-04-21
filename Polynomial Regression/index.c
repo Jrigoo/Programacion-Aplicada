@@ -3,6 +3,7 @@
 # include <string.h>
 # include<math.h>
 
+#define DATAG "gps.csv"
 #define DATA1 "gpsPt1.csv"
 #define DATA2 "gpsPt2.csv"
 
@@ -55,14 +56,17 @@ void main(){
 
     yrp = getResult(n,x,beta,grado+1);
     free(yrp);
-
-    printf("\n Variable independiente x \n");
-    printArray(x,n);
-
-    printf("\n Puntos resultantes yr \n");
-    printArray(yrp,n);
     RMSE(n,y,yrp);
 }
+
+//printf("\n Variable independiente x \n");
+//printArray(x,n);
+
+//printf("\n Puntos dados por el prof y \n");
+//printArray(y,n);
+
+//printf("\n Puntos resultantes yr \n");
+//printArray(yrp,n);
 
 void printArray(double values[],int n){
     for (int i = 0; i < n; i++){
