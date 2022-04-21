@@ -18,16 +18,12 @@ double **multiply(double mat1[][100], double mat2[][100],int row1,int row2,int c
 double **transpose(double mat1[][100],int rows,int columns);
 double **readFile(char file[],int n);
 
-void main(){
+int main(){
     double **gpsData,**gpsData1;
     double x[100];
     double y[100];
     double Y[100][100];
-    double beta[100];
-    int grado = 4; //Para DATA 2 Grado 4, Para DATA 1 Grado 1
 
-    double **bp;
-    double *yrp;
     int n = countLines(DATA2);
     gpsData = readFile(DATA2,n);
     
@@ -42,31 +38,127 @@ void main(){
             }
         }
     }
-    
-    bp = polynomialRegression(x,Y,grado,n);
-    printf("Ecuacion resultante y junto a coeficientes beta ------------->\n");
-    for (int i = 0; i < grado+1; i++){
-        beta[i] = bp[i][0];
-        if (beta[i] > 0){
-            printf("+%f*x^%d\t",beta[i],i);
-        }else{
-            printf("%f*x^%d\t",beta[i],i);
+    for (int grado = 2; grado < 11; grado++)   {
+        printf("\n------------------------------------------\n");
+        double beta[100];
+        int order = grado + 1;
+        double X[100][100];
+        double XT[100][100];
+        double XRes[100][100];
+        double XYRes[100][100];
+        double XInv[100][100];
+
+        //Generar matriz X
+        for (int i = 0; i < n; i++){
+            for (int j = 0; j < order; j++){
+                X[i][j] = powf(x[i],j);
+            }
         }
-    }   
+        
+        //Transponer XT = transpose(X)
+        for (int i = 0; i < n; ++i){ 
+            for (int j = 0; j < order; ++j) { 
+                XT[j][i] = X[i][j];
+            }
+        }
+        
+        //Multiplicación XRes = XT*X
+        for (int i = 0; i < order; i++) {
+            for (int j = 0; j < order; j++) {
+                XRes[i][j] = 0;
+                for (int k = 0; k < n; k++) {
+                    XRes[i][j] += XT[i][k] * X[k][j];
+                }
+            }
+        } 
+        
+        //Multiplicación XYRes = XT*Y
+        for (int i = 0; i < order; i++) {
+            for (int j = 0; j < 1; j++) {
+                XYRes[i][j] = 0;
+                for (int k = 0; k < n; k++) {
+                    XYRes[i][j] += XT[i][k] * Y[k][j];
+                }
+            }
+        } 
+       
+        //Invertir matriz inv(XRes)
+        double adj[100][100],ratio;
+        for(int i=0;i<order;i++){
+            for(int j=0;j<order;j++){
+                adj[i][j] = XRes[i][j];
+            }
+        }
+        for(int i=0;i<order;i++){
+            for(int j=0;j<order;j++){
+                if(i==j){
+                    adj[i][j+order] = 1;
+                }
+                else{
+                    adj[i][j+order] = 0;
+                }
+            }
+        }
+        for(int i=0;i<order;i++){
+            if(adj[i][i] == 0.0){
+                printf("Mathematical Error!");
+                return 0;
+            }
+            for(int j=0;j<order;j++){
+                if(i!=j){
+                    ratio = adj[j][i]/adj[i][i];
+                    for(int k=1;k<2*order;k++)
+                    {
+                        adj[j][k] = adj[j][k] - ratio*adj[i][k];
+                    }
+                }
+            }
+        }
+        for(int i=0;i<order;i++){
+            for(int j=order;j<2*order;j++){
+            adj[i][j] = adj[i][j]/adj[i][i];
+            }
+        }
+        for(int i=0;i<order;i++){
+            int c = 0;
+            for(int j=order;j<2*order;j++){
+                XInv[i][c] = adj[i][j];
+                c++;
+            }
+        }
 
-    yrp = getResult(n,x,beta,grado+1);
-    free(yrp);
-    RMSE(n,y,yrp);
+        //Obtener coeficientes. beta = XInv*XYRes
+        for (int i = 0; i < order; i++) {
+            beta[i] = 0;
+            for (int k = 0; k < order; k++) {
+                beta[i] += XInv[i][k] * XYRes[k][0];
+            }
+        }        
+
+        printf("ECUACION RESULTANTE - GRADO %d \n",grado);
+        for (int i = 0; i < grado+1; i++){
+            if (beta[i] > 0){
+                printf("+%f*x^%d\t",beta[i],i);
+            }else{
+                printf("%f*x^%d\t",beta[i],i);
+            }
+        }   
+
+        //Obtener vector yr con la ecuación ya obtenida
+        double yr[100],result;
+        for (int i = 0; i < n; i++){
+            result = 0;
+            for (int j = 0; j < order; j++){
+                result = result + beta[j]*pow(x[i],j);
+            }
+            yr[i] = result;
+        }
+
+        //Root Medium Square Error
+        RMSE(n,y,yr);
+    }
+    return 0;
 }
-
-//printf("\n Variable independiente x \n");
-//printArray(x,n);
-
-//printf("\n Puntos dados por el prof y \n");
-//printArray(y,n);
-
-//printf("\n Puntos resultantes yr \n");
-//printArray(yrp,n);
 
 void printArray(double values[],int n){
     for (int i = 0; i < n; i++){
@@ -96,6 +188,7 @@ int countLines(char file[]){
 			n++;
 		}
 	}
+
     return n;
 }
 
@@ -135,8 +228,8 @@ double **readFile(char file[],int n){
             }
             //printf("%f \t",csvData[i][j]);
         }
-        //printf("\n");
     }
+
     return csvData;
 }
 
@@ -166,7 +259,6 @@ double **polynomialRegression(double x[100],double Y[][100],int grado,int n){
             X[i][j] = powf(x[i],j);
             //printf("%f \t",X[i][j]);
         }
-        //printf("\n");
     }
     //printf("\n");
 
@@ -177,7 +269,6 @@ double **polynomialRegression(double x[100],double Y[][100],int grado,int n){
             XT[i][j] = XTP[i][j];
             //printf("%f \t",XTP[i][j]);
         }
-        //printf("\n");
     } 
     //printf("\n");
 
@@ -189,7 +280,6 @@ double **polynomialRegression(double x[100],double Y[][100],int grado,int n){
             XRes[i][j] = XPRes[i][j];
             //printf("%f \t",XPRes[i][j]);
         }
-        //printf("\n");
     } 
     //printf("\n");
 
@@ -200,7 +290,6 @@ double **polynomialRegression(double x[100],double Y[][100],int grado,int n){
             XYRes[i][j] = XYPRes[i][j];
             //printf("%f \t",XYPRes[i][j]);
         }
-        //printf("\n");
     } 
     //printf("\n");
 
@@ -211,7 +300,6 @@ double **polynomialRegression(double x[100],double Y[][100],int grado,int n){
             XInv[i][j] = XPInv[i][j];
             //printf("%f \t",XPInv[i][j]);
         }
-        //printf("\n");
     } 
     //printf("\n");
 
