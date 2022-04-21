@@ -40,13 +40,13 @@ int main(){
     }
     for (int grado = 2; grado < 11; grado++)   {
         printf("\n------------------------------------------\n");
-        double beta[100];
         int order = grado + 1;
-        double X[100][100];
-        double XT[100][100];
-        double XRes[100][100];
-        double XYRes[100][100];
-        double XInv[100][100];
+        double beta[order];
+        double X[n][order];
+        double XT[order][n];
+        double XRes[order][order];
+        double XYRes[order][1];
+        double XInv[order][order];
 
         //Generar matriz X
         for (int i = 0; i < n; i++){
