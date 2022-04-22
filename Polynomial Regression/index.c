@@ -57,6 +57,12 @@ void main(){
     yrp = getResult(n,x,beta,grado+1);
     free(yrp);
     RMSE(n,y,yrp);
+
+    printf("\n Variable independiente x \n");
+    printArray(x,n);
+
+    printf("\n Puntos dados por el prof y \n");
+    printArray(y,n);
 }
 
 //printf("\n Variable independiente x \n");
