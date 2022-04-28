@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <windows.h>
 
-int main()
-{
+int main(){
     HANDLE PORT = INVALID_HANDLE_VALUE; // Identifier of the serial port.
     PORT = CreateFile( 
         "\\\\.\\COM13",
@@ -27,30 +26,31 @@ int main()
         printf("GetCommState() failed\n");
         return -1;
     }
-    printf("baud rate = %d\n",dcb.BaudRate);
-    printf("Parity = %d\n",dcb.Parity);
-    printf("Byte Size = %d\n",dcb.ByteSize);
-    printf("Stop Bit = %d\n",dcb.StopBits);
     dcb.BaudRate = 9600 ;
         if (!SetCommState(PORT, &dcb)){
         printf("SetCommState() failed\n");
         return -1;
     }
-    #define BUFFER_SIZE 256
-    char writebuf[BUFFER_SIZE]; 
-    strcpy(writebuf, "HELLO");
-    int writtenbytes = 0;
-    if (WriteFile(PORT, writebuf, 5 , (LPDWORD)&writtenbytes, NULL)){
-        if (writtenbytes == 0){
-            printf("WriteFile() timed out\n");
+
+    while (1){
+        char instruction[20];
+        printf("Insert Instruction: ");
+        scanf("%s",instruction);
+        printf("Your Instrucction was: %s \n",instruction);
+        int writtenbytes = 0;
+        if (WriteFile(PORT, instruction, 5 , (LPDWORD)&writtenbytes, NULL)){
+            if (writtenbytes == 0){
+                printf("WriteFile() timed out\n");
+                return -1;
+            }
+        }
+        else{
+            printf("WriteFile() failed\n");
             return -1;
         }
+        printf("%d bytes were written\n",writtenbytes );
     }
-    else{
-        printf("WriteFile() failed\n");
-        return -1;
-    }
-    printf("%d bytes were written\n",writtenbytes );
+    
     
     if (!CloseHandle(PORT)){
         printf("CloseHandle() failed\n");
