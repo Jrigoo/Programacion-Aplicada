@@ -1,5 +1,7 @@
-import serial
-gps = serial.Serial("COM14",baudrate=9600)
+from serial import Serial
+
+gps = Serial("COM14",baudrate=9600)
+
 while True:
     line  = str(gps.readline())
     if "$GPGGA" in line:
