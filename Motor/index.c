@@ -4,7 +4,7 @@
 int main(){
     HANDLE PORT = INVALID_HANDLE_VALUE; // Identifier of the serial port.
     PORT = CreateFile( 
-        "\\\\.\\COM13",
+        "\\\\.\\COM15",
         GENERIC_READ | GENERIC_WRITE,
         0,    // Must be opened with exclusive-access.
         NULL, // No security attributes.
@@ -27,7 +27,7 @@ int main(){
         return -1;
     }
     dcb.BaudRate = 9600 ;
-        if (!SetCommState(PORT, &dcb)){
+    if (!SetCommState(PORT, &dcb)){
         printf("SetCommState() failed\n");
         return -1;
     }
